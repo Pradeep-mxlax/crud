@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% block title %}Your cart{% endblock %}
+{% block content %}
+<h1>Your cart</h1>
+<table>
+	<tr>
+		<th>Product</th>
+		<th>Quantity</th>
+		<th>Price</th>
+		<th>Total</th>
+		<th></th>
+	</tr>
+	{% for item in cart %}
+	<tr>
+		<td><a href="{{ item.product.get_absolute_url }}">{{ item.product.name }}</a></td>
+		<td>
+			<form action="{% url 'cart:cart_add' item.product.id %}" method="post">
+				{% csrf_token %}
+				{{ item.update_quantity_form.quantity }}
+				{{ item.update_quantity_form.override }}
+				<button type="submit">Update</button>
+			</form>
+		</td>
+		<td>${{ item.price }}</td>
+		<td>${{ item.total_price }}</td>
+		<td>
+			<form action="{% url 'cart:cart_remove' item.product.id %}" method="post">
+				{% csrf_token %}
+				<button type="submit">Remove</button>
+			</form>
+		</td>
+	</tr>
+	{% empty %}
+	<tr><td colspan="5">Your cart is empty.</td></tr>
+	{% endfor %}
+</table>
+<p><strong>Subtotal:</strong> ${{ cart.get_total_price }}</p>
+<p><a href="{% url 'orders:order_create' %}">Proceed to checkout</a></p>
+{% endblock %}
